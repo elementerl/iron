@@ -1,6 +1,6 @@
 # iron
 
-Functional Erlang Toolbelt
+Functional Erlang Toolkit
 
 ## Usage
 

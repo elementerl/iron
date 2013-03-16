@@ -1,6 +1,6 @@
 {application, iron,
  [
-  {description, ""},
+  {description, "Functional Erlang Toolkit"},
   {vsn, "1"},
   {registered, []},
   {applications, [
