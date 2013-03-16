@@ -11,11 +11,12 @@ app.plt:
 	@$(DIALYZER) --build_plt --output_plt app.plt --apps erts kernel stdlib
 dialyze: app.plt compile
 	@$(DIALYZER) -q --plt app.plt -n ebin -Wunmatched_returns -Werror_handling -Wrace_conditions
-test: dialyze
+test:
 	@$(REBAR) eunit
+validate: dialyze test
 clean:
 	@$(REBAR) clean
 repl:
 	@$(ERL) -pa ebin
 
-.PHONY: all test clean dialyze deps
+.PHONY: all test clean validate dialyze deps
