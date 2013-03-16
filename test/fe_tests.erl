@@ -26,5 +26,9 @@ any_test_() ->
     ].
 
 count_test_() ->
-    { "returns the count of needles", 
+    { "returns the count of needles found in the haystack", 
         ?_assertMatch(2, fe:count(2, [1,4,2,4,2])) }.
+
+bind_test_() ->
+    Bound = fe:bind(true, fun fe:id/1),
+    { "binds an argument to a function", ?_assertMatch(true, Bound()) }.

@@ -1,16 +1,16 @@
 -module(fe).
 
--export([true/0, false/0]).
+-export([bind/2]).
 -export([all/1, any/1]).
 -export([count/2]).
+-export([true/0, false/0, id/1]).
 
 -type predicate() :: fun(() -> boolean()).
 
--spec true() -> true.
-true() -> true.
-
--spec false() -> false.
-false() -> false.
+%% =====================================================================                
+%% Composition 
+%% =====================================================================                
+bind(Arg, Fun) -> fun() -> apply(Fun, [Arg]) end.
 
 %% =====================================================================                
 %% Logics                                                                               
@@ -32,3 +32,15 @@ any(Preds) when	is_list(Preds) ->
 count(Needle, Haystack) ->
     lists:foldl(fun(N, Count) when N =:= Needle -> Count + 1;
                    (_, Count) -> Count end, 0, Haystack).
+
+%% =====================================================================                
+%% Utility
+%% =====================================================================                
+-spec true() -> true.
+true() -> true.
+
+-spec false() -> false.
+false() -> false.
+
+-spec id(any()) -> any().
+id(Any) -> Any.
