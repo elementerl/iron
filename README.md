@@ -10,7 +10,6 @@ Here's how you use it...
 
 ## ToDo
 
-* Rename bind to papply, make sure it handles the zero-arity cases
 * count with coerce equality, count with custom predicate
 * find exact equality, find with coerce equality, find with custom predicate
 

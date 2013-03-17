@@ -1,6 +1,6 @@
 -module(fe).
 
--export([bind/2]).
+-export([papply/2]).
 -export([all/1, any/1]).
 -export([true/0, false/0, id/1]).
 -export([count/2, uniq/1, foldl1/2]).
@@ -10,7 +10,18 @@
 %% =====================================================================
 %% Composition
 %% =====================================================================
-bind(Arg, Fun) -> fun() -> apply(Fun, [Arg]) end.
+-spec papply(Fun::fun(), Fix::any()) -> fun().
+papply(Fun, Fix) -> 
+    case arity(Fun) of
+        0 ->
+            {error, badarity};
+        1 -> 
+            fun() -> apply(Fun, [Fix]) end;
+        2 -> 
+            fun(Arg) -> apply(Fun, [Fix|[Arg]]) end;
+        _ -> 
+            fun(Args) when is_list(Args) -> apply(Fun, [Fix|Args]) end
+    end.
 
 %% =====================================================================
 %% Logics
@@ -33,7 +44,7 @@ count(Needle, Haystack) ->
     lists:foldl(fun(N, Count) when N =:= Needle -> Count + 1;
                    (_, Count) -> Count end, 0, Haystack).
 
--spec uniq(list()) -> list().
+-spec uniq(List::list()) -> list().
 uniq(List) ->
     lists:usort(List).
 
@@ -50,5 +61,9 @@ true() -> true.
 -spec false() -> false.
 false() -> false.
 
--spec id(any()) -> any().
+-spec id(Any::any()) -> any().
 id(Any) -> Any.
+
+arity(Fun) -> 
+    {arity, N} = erlang:fun_info(Fun, arity),
+    N.
