@@ -33,9 +33,9 @@ count(Needle, Haystack) ->
     lists:foldl(fun(N, Count) when N =:= Needle -> Count + 1;
                    (_, Count) -> Count end, 0, Haystack).
 
--spec uniq([any()]) -> [any()].
+-spec uniq(list()) -> list().
 uniq(List) ->
-    ordsets:from_list(List).
+    lists:usort(List).
 
 %% =====================================================================                
 %% Utility

@@ -34,5 +34,5 @@ bind_test_() ->
     { "binds an argument to a function", ?_assertMatch(true, Bound()) }.
 
 uniq_test_() ->
-    { "returns the ordered set of uniq items in a list",
+    { "returns the ordered set of uniq items from a list",
         ?_assertMatch([1,2,3], fe:uniq([2,1,1,3,3,2])) }.
