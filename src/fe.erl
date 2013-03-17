@@ -4,28 +4,42 @@
 -export([all/1, any/1]).
 -export([true/0, false/0, id/1]).
 -export([count/2, uniq/1, foldl1/2, find/2, find/3]).
+-export([pnand/2, pnot/1, pand/2, por/2]).
 
 -type predicate() :: fun(() -> boolean()).
 
 %% =====================================================================
 %% Composition
 %% =====================================================================
+
 -spec papply(Fun::fun(), Fix::any()) -> fun().
-papply(Fun, Fix) -> 
+papply(Fun, Fix) ->
     case arity(Fun) of
         0 ->
             {error, badarity};
-        1 -> 
+        1 ->
             fun() -> apply(Fun, [Fix]) end;
-        2 -> 
+        2 ->
             fun(Arg) -> apply(Fun, [Fix|[Arg]]) end;
-        _ -> 
+        _ ->
             fun(Args) when is_list(Args) -> apply(Fun, [Fix|Args]) end
     end.
 
 %% =====================================================================
 %% Logics
 %% =====================================================================
+
+-spec pnand(P::predicate(), Q::predicate()) -> predicate().
+pnand(P, Q) -> fun() -> nand(P(), Q()) end.
+
+-spec pnot(Prop::predicate()) -> predicate().
+pnot(Prop) -> pnand(Prop, Prop).
+
+-spec pand(P::predicate(), Q::predicate()) -> predicate().
+pand(P, Q) -> pnot(pnand(P, Q)).
+
+-spec por(P::predicate(), Q::predicate()) -> predicate().
+por(P, Q) -> pnand(pnand(P, P), pnand(Q, Q)).
 
 -spec all(Preds::[predicate()]) -> predicate().
 all(Preds) when is_list(Preds) ->
@@ -49,8 +63,7 @@ uniq(List) ->
     lists:usort(List).
 
 -spec foldl1(fun((Element::any(), Acc::any()) -> Acc::any()), list()) -> Acc::any().
-foldl1(Fun, [X|Rest]) ->
-    lists:foldl(Fun, X, Rest).
+foldl1(Fun, [X|Rest]) -> lists:foldl(Fun, X, Rest).
 
 -spec find(Needle::any(), Haystack::[any()]) -> any() | notfound.
 find(Needle, Haystack) ->
@@ -67,6 +80,7 @@ find(Needle, [_|T], NotFound) ->
 %% =====================================================================
 %% Utility
 %% =====================================================================
+
 -spec true() -> true.
 true() -> true.
 
@@ -76,6 +90,12 @@ false() -> false.
 -spec id(Any::any()) -> any().
 id(Any) -> Any.
 
-arity(Fun) -> 
+arity(Fun) ->
     {arity, N} = erlang:fun_info(Fun, arity),
     N.
+
+-spec nand(P::boolean(), Q::boolean()) -> boolean().
+nand(false, false) -> true;
+nand(false, true)  -> true;
+nand(true,  false) -> true;
+nand(true,  true)  -> false.

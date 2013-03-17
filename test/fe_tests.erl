@@ -7,7 +7,7 @@ papply_test_() ->
     N1 = fe:papply(fun fe:count/2, foo),
     NM = fe:papply(fun(A,B,C) -> A + B + C end, 2),
     [
-        { "reducing arity from 1 to 0", 
+        { "reducing arity from 1 to 0",
             ?_assertMatch(true, PA()) },
 
         { "reducing arity from N to 1",
@@ -21,6 +21,55 @@ papply_test_() ->
     ].
 
 %% Logics tests
+
+pnot_test_() ->
+    PTrue  = fun() -> true end,
+    PFalse = fun() -> false end,
+
+    [
+     { "true predicates becomes false",
+       ?_assertMatch(false, (fe:pnot(PTrue))())},
+
+     { "false predicates becomes true",
+       ?_assertMatch(true, (fe:pnot(PFalse))())}
+    ].
+
+pand_test_() ->
+    PTrue  = fun() -> true end,
+    PFalse = fun() -> false end,
+
+    [
+     { "true && true predicates are true",
+       ?_assertMatch(true, (fe:pand(PTrue, PTrue))())},
+
+     { "false && true predicates are false",
+       ?_assertMatch(false, (fe:pand(PFalse, PTrue))())},
+
+     { "true && false predicates are false",
+       ?_assertMatch(false, (fe:pand(PTrue, PFalse))())},
+
+     { "false && false predicates are false",
+       ?_assertMatch(false, (fe:pand(PFalse, PFalse))())}
+    ].
+
+por_test_() ->
+    PTrue  = fun() -> true end,
+    PFalse = fun() -> false end,
+
+    [
+     { "true && true predicates are true",
+       ?_assertMatch(true, (fe:por(PTrue, PTrue))())},
+
+     { "false && true predicates are true",
+       ?_assertMatch(true, (fe:por(PFalse, PTrue))())},
+
+     { "true && false predicates are true",
+       ?_assertMatch(true, (fe:por(PTrue, PFalse))())},
+
+     { "false && false predicates are false",
+       ?_assertMatch(false, (fe:por(PFalse, PFalse))())}
+    ].
+
 all_test_() ->
     AllT = fe:all([fun fe:true/0, fun fe:true/0]),
     OneF = fe:all([fun fe:true/0, fun fe:false/0]),
@@ -44,14 +93,14 @@ any_test_() ->
 
 %% Collections tests
 count_test_() ->
-    { "returns the count of needles found in the haystack", 
+    { "returns the count of needles found in the haystack",
         ?_assertMatch(2, fe:count(2, [1,4,2,4,2])) }.
 
 uniq_test_() ->
     { "returns the ordered set of uniq items from a list",
         ?_assertMatch([1,2,3], fe:uniq([2,1,1,3,3,2])) }.
 
-fold1_test_() ->
+foldl1_test_() ->
     Id = fun(X, _Acc) -> X end,
     Mult = fun(N, M) -> N * M end,
 
