@@ -14,7 +14,10 @@ papply_test_() ->
             ?_assertMatch(3, N1([bar, foo, foo, baz, foo])) },
 
         { "reducing arity from N to M",
-            ?_assertMatch(9, NM([3,4])) }
+            ?_assertMatch(9, NM([3,4])) },
+
+        { "applying a 0-arity fun is an error",
+            ?_assertMatch({error, badarity}, fe:papply(fun() -> ok end, wat)) }
     ].
 
 %% Logics tests
