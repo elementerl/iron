@@ -33,6 +33,18 @@ bind_test_() ->
     Bound = fe:bind(true, fun fe:id/1),
     { "binds an argument to a function", ?_assertMatch(true, Bound()) }.
 
+fold1_test_() ->
+    Id = fun(X, _Acc) -> X end,
+    Mult = fun(N, M) -> N * M end,
+
+    [
+     { "It cannot be applied to an empty list.",
+       ?_assertError(function_clause, fe:foldl1(Id, []))},
+
+     { "It behaves as foldl, save that Acc is the initial list element.",
+       ?_assertMatch(120, fe:foldl1(Mult, [1,2,3,4,5]))}
+    ].
+
 uniq_test_() ->
     { "returns the ordered set of uniq items from a list",
         ?_assertMatch([1,2,3], fe:uniq([2,1,1,3,3,2])) }.
