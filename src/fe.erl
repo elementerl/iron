@@ -2,8 +2,8 @@
 
 -export([bind/2]).
 -export([all/1, any/1]).
--export([count/2, uniq/1]).
 -export([true/0, false/0, id/1]).
+-export([count/2, uniq/1, foldl1/2]).
 
 -type predicate() :: fun(() -> boolean()).
 
@@ -36,6 +36,10 @@ count(Needle, Haystack) ->
 -spec uniq(list()) -> list().
 uniq(List) ->
     lists:usort(List).
+
+-spec foldl1(fun((Element::any(), Acc::any()) -> Acc::any()), list()) -> Acc::any().
+foldl1(Fun, [X|Rest]) ->
+    lists:foldl(Fun, X, Rest).
 
 %% =====================================================================
 %% Utility
