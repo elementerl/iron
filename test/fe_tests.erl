@@ -31,10 +31,10 @@ compose_test_() ->
     Funs = [Addr, Conv, Stry, Drop],
 
     [
-     { "It should act as identify for input with an empty list of funs.",
+     { "It should act as identity for input with an empty list of funs.",
        ?_assertMatch(Input, fe:compose(Input, []))},
 
-     { "It should correclty compose multple functions.",
+     { "It should correctly compose multple functions.",
        ?_assertMatch(100, fe:compose(Input, Funs))}
     ].
 
