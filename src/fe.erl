@@ -52,7 +52,7 @@ uniq(List) ->
 foldl1(Fun, [X|Rest]) ->
     lists:foldl(Fun, X, Rest).
 
--spec find(Needle::any(), Haystack::[any()]) -> any() | not_found.
+-spec find(Needle::any(), Haystack::[any()]) -> any() | notfound.
 find(Needle, Haystack) ->
     find(Needle, Haystack, notfound).
 
