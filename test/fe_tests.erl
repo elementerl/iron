@@ -51,6 +51,18 @@ uniq_test_() ->
     { "returns the ordered set of uniq items from a list",
         ?_assertMatch([1,2,3], fe:uniq([2,1,1,3,3,2])) }.
 
+fold1_test_() ->
+    Id = fun(X, _Acc) -> X end,
+    Mult = fun(N, M) -> N * M end,
+
+    [
+     { "It cannot be applied to an empty list.",
+       ?_assertError(function_clause, fe:foldl1(Id, []))},
+
+     { "It behaves as foldl, save that Acc is the initial list element.",
+       ?_assertMatch(120, fe:foldl1(Mult, [1,2,3,4,5]))}
+    ].
+
 %% Utility tests
 true_test() -> true = fe:true().
 false_test() -> false = fe:false().
