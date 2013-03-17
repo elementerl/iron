@@ -44,7 +44,7 @@ count(Needle, Haystack) ->
     lists:foldl(fun(N, Count) when N =:= Needle -> Count + 1;
                    (_, Count) -> Count end, 0, Haystack).
 
--spec uniq(list()) -> list().
+-spec uniq(List::list()) -> list().
 uniq(List) ->
     lists:usort(List).
 
@@ -57,7 +57,7 @@ true() -> true.
 -spec false() -> false.
 false() -> false.
 
--spec id(any()) -> any().
+-spec id(Any::any()) -> any().
 id(Any) -> Any.
 
 arity(Fun) -> 
