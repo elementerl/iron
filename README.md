@@ -8,7 +8,9 @@ Here's how you use it...
 
 ## ToDo
 
-* Make bind work properly, e.g. handle multiple arguments.
+* Rename bind to papply, make sure it handles the zero-arity cases
+* count with coerce equality, count with custom predicate
+* find exact equality, find with coerce equality, find with custom predicate
 
 ## License
 

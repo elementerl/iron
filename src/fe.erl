@@ -25,7 +25,7 @@ any(Preds) when	is_list(Preds) ->
     fun() -> lists:foldl(fun(Pred, Acc) -> Acc or Pred() end, false, Preds) end.
 
 %% =====================================================================                
-%% Tabulations                                                                          
+%% Collections
 %% =====================================================================                
 
 -spec count(Needle::any(), Haystack::[any()]) -> non_neg_integer().
