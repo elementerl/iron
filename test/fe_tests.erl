@@ -2,9 +2,10 @@
 -include_lib("eunit/include/eunit.hrl").
 
 %% Composition tests
-bind_test_() ->
-    Bound = fe:bind(true, fun fe:id/1),
-    { "binds an argument to a function", ?_assertMatch(true, Bound()) }.
+papply_test_() ->
+    PA = fe:papply(fun fe:id/1, true),
+    { "partially applies a function to an argument",
+        ?_assertMatch(true, PA()) }.
 
 %% Logics tests
 all_test_() ->
