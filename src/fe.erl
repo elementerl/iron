@@ -2,7 +2,7 @@
 
 -export([bind/2]).
 -export([all/1, any/1]).
--export([count/2]).
+-export([count/2, uniq/1]).
 -export([true/0, false/0, id/1]).
 
 -type predicate() :: fun(() -> boolean()).
@@ -32,6 +32,10 @@ any(Preds) when	is_list(Preds) ->
 count(Needle, Haystack) ->
     lists:foldl(fun(N, Count) when N =:= Needle -> Count + 1;
                    (_, Count) -> Count end, 0, Haystack).
+
+-spec uniq(list()) -> list().
+uniq(List) ->
+    lists:usort(List).
 
 %% =====================================================================                
 %% Utility
