@@ -10,7 +10,18 @@
 %% =====================================================================                
 %% Composition 
 %% =====================================================================                
-papply(Fun, Arg) -> fun() -> apply(Fun, [Arg]) end.
+-spec papply(Fun::fun(), Fix::any()) -> fun().
+papply(Fun, Fix) -> 
+    case arity(Fun) of
+        0 ->
+            {error, badarity};
+        1 -> 
+            fun() -> apply(Fun, [Fix]) end;
+        2 -> 
+            fun(Arg) -> apply(Fun, [Fix|[Arg]]) end;
+        _ -> 
+            fun(Args) when is_list(Args) -> apply(Fun, [Fix|Args]) end
+    end.
 
 %% =====================================================================                
 %% Logics                                                                               
@@ -48,3 +59,7 @@ false() -> false.
 
 -spec id(any()) -> any().
 id(Any) -> Any.
+
+arity(Fun) -> 
+    {arity, N} = erlang:fun_info(Fun, arity),
+    N.

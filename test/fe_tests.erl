@@ -4,8 +4,18 @@
 %% Composition tests
 papply_test_() ->
     PA = fe:papply(fun fe:id/1, true),
-    { "partially applies a function to an argument",
-        ?_assertMatch(true, PA()) }.
+    N1 = fe:papply(fun fe:count/2, foo),
+    NM = fe:papply(fun(A,B,C) -> A + B + C end, 2),
+    [
+        { "reducing arity from 1 to 0", 
+            ?_assertMatch(true, PA()) },
+
+        { "reducing arity from N to 1",
+            ?_assertMatch(3, N1([bar, foo, foo, baz, foo])) },
+
+        { "reducing arity from N to M",
+            ?_assertMatch(9, NM([3,4])) }
+    ].
 
 %% Logics tests
 all_test_() ->
