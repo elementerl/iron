@@ -3,7 +3,7 @@
 -export([papply/2]).
 -export([all/1, any/1]).
 -export([true/0, false/0, id/1]).
--export([count/2, uniq/1, foldl1/2]).
+-export([count/2, uniq/1, foldl1/2, find/2, find/3]).
 
 -type predicate() :: fun(() -> boolean()).
 
@@ -51,6 +51,18 @@ uniq(List) ->
 -spec foldl1(fun((Element::any(), Acc::any()) -> Acc::any()), list()) -> Acc::any().
 foldl1(Fun, [X|Rest]) ->
     lists:foldl(Fun, X, Rest).
+
+-spec find(Needle::any(), Haystack::[any()]) -> any() | not_found.
+find(Needle, Haystack) ->
+    find(Needle, Haystack, notfound).
+
+-spec find(Needle::any(), Haystack::[any()], NotFound::any()) -> any().
+find(_, [], NotFound) ->
+    NotFound;
+find(Needle, [H|_], _) when Needle =:= H ->
+    Needle;
+find(Needle, [_|T], NotFound) ->
+    find(Needle, T, NotFound).
 
 %% =====================================================================
 %% Utility

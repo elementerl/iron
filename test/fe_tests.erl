@@ -63,6 +63,18 @@ fold1_test_() ->
        ?_assertMatch(120, fe:foldl1(Mult, [1,2,3,4,5]))}
     ].
 
+find_test_() ->
+    [
+        { "returns the element in haystack equal to needle",
+            ?_assertMatch(needle, fe:find(needle, [thread, needle, spool])) },
+
+        { "returns notfound if the haystack does not contain the needle",
+            ?_assertMatch(notfound, fe:find(needle, [thread, spool, cloth])) },
+
+        { "returns a custom value if not found",
+            ?_assertMatch(ohai, fe:find(needle, [thread, spool], ohai)) }
+    ].
+
 %% Utility tests
 true_test() -> true = fe:true().
 false_test() -> false = fe:false().
