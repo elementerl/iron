@@ -1,6 +1,6 @@
 # iron
 
-[![Build Status](https://travis-ci.org/elementerl/iron.png)](https://travis-ci.org/elementerl/iron])
+[![Build Status](https://travis-ci.org/elementerl/iron.png)](https://travis-ci.org/elementerl/iron)
 
 Functional Erlang Toolkit
 
