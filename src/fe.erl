@@ -1,6 +1,6 @@
 -module(fe).
 
--export([papply/2]).
+-export([papply/2, compose/2]).
 -export([all/1, any/1]).
 -export([true/0, false/0, id/1]).
 -export([count/2, uniq/1, foldl1/2, find/2, find/3]).
@@ -24,6 +24,10 @@ papply(Fun, Fix) ->
         _ ->
             fun(Args) when is_list(Args) -> apply(Fun, [Fix|Args]) end
     end.
+
+-spec compose(Input::any(), [fun(() -> any())]) -> any().
+compose(Input, Funs) ->
+    lists:foldl(fun(F, Inp) -> apply(F, [Inp]) end, Input, Funs).
 
 %% =====================================================================
 %% Logics
