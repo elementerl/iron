@@ -1,5 +1,8 @@
 -module(fe_tests).
 -include_lib("eunit/include/eunit.hrl").
+-include_lib("triq/include/triq.hrl").
+
+-define(PROP(P), ?_assertMatch(true, triq:check(P))).
 
 %% Composition tests
 papply_test_() ->
@@ -110,9 +113,21 @@ any_test_() ->
     ].
 
 %% Collections tests
+
 count_test_() ->
-    { "returns the count of needles found in the haystack",
-        ?_assertMatch(2, fe:count(2, [1,4,2,4,2])) }.
+    [
+     { "returns the count of needles found in the haystack",
+       ?_assertMatch(2, fe:count(2, [1,4,2,4,2])) },
+
+     { "count must never be greater than the length of list",
+       ?PROP(?FORALL({X, Xs}, {int(), list(int())},
+                     length(Xs) >= fe:count(X, Xs))) },
+
+     { "count must always be >= 0",
+       ?PROP(?FORALL({X, Xs}, {int(), list(int())},
+                     0 =< fe:count(X, Xs))) }
+
+    ].
 
 uniq_test_() ->
     { "returns the ordered set of uniq items from a list",

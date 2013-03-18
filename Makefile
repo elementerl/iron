@@ -10,9 +10,8 @@ compile:
 app.plt:
 	@$(DIALYZER) --build_plt --output_plt app.plt --apps erts kernel stdlib
 dialyze: app.plt compile
-	@$(DIALYZER) -q --plt app.plt -n ebin -Wunmatched_returns -Werror_handling -Wrace_conditions
-test:
-	@$(REBAR) eunit
+	@$(DIALYZER) -q --plt app.plt -n ebin -Wunmatched_returns -Werror_handling -Wratest:
+	@$(REBAR) skip_deps=true eunit
 validate: dialyze test
 clean:
 	@$(REBAR) clean
