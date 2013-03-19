@@ -4,6 +4,7 @@
 -export([all/1, any/1]).
 -export([true/0, false/0, id/1]).
 -export([count/2, uniq/1, foldl1/2, find/2, find/3]).
+-export([fst/1, snd/1, curry/1, uncurry/1]).
 -export([pnand/2, pnot/1, pand/2, por/2]).
 
 -type predicate() :: fun(() -> boolean()).
@@ -52,6 +53,29 @@ all(Preds) when is_list(Preds) ->
 -spec any(Preds::[predicate()]) -> predicate().
 any(Preds) when	is_list(Preds) ->
     fun() -> lists:foldl(fun(Pred, Acc) -> Acc or Pred() end, false, Preds) end.
+
+%% =====================================================================
+%% Tuples
+%% =====================================================================
+
+-spec fst(tuple(any())) -> any() | undefined.
+fst({}) -> undefined;
+fst(Tup) when is_tuple(Tup) -> erlang:element(1, Tup).
+
+-spec snd(tuple(any())) -> any() | undefined.
+snd({})     -> undefined;
+snd({_})    -> undefined;
+snd(Tup) when is_tuple(Tup) -> erlang:element(2, Tup).
+
+-spec curry(fun(({A::any(), B::any()}) -> C::any())) ->
+                   fun((A::any(), B::any()) -> C::any()).
+curry(F) when is_function(F, 1) ->
+    fun(A, B) -> F({A,B}) end.
+
+-spec uncurry(fun((A::any(), B::any()) -> C::any())) ->
+                     fun(({A::any(), B::any()}) -> C::any()).
+uncurry(F) when is_function(F, 2) ->
+    fun({A, B}) -> F(A, B) end.
 
 %% =====================================================================
 %% Collections
