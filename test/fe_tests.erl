@@ -112,6 +112,49 @@ any_test_() ->
         { "false if none are true", ?_assertMatch(false, None()) }
     ].
 
+%% Tuples
+
+fst_test_() ->
+    [
+     { "be a synonym for erlang:element/2 for non-empty tuples",
+       ?PROP(?FORALL(T, tuple(int()), ?IMPLIES(tuple_size(T) > 0,
+                                               element(1,T) =:= fe:fst(T))))},
+
+     { "return 'undefined' when applied to an empty tuple",
+       ?_assertMatch(undefined, fe:fst({}))}
+    ].
+
+snd_test_() ->
+    [
+     { "be a synonym for erlang:element/2 for pairs and more",
+       ?PROP(?FORALL(T, tuple(int()), ?IMPLIES(tuple_size(T) > 1,
+                                               element(2,T) =:= fe:snd(T))))},
+
+     { "return 'undefined' when applied to an empty tuple",
+       ?_assertMatch(undefined, fe:snd({}))},
+
+     { "return 'undefined' when applied to an singleton tuple",
+       ?_assertMatch(undefined, fe:snd({1}))}
+    ].
+
+curries_test_() ->
+    UncurFun = fun({A, B}) -> A + B end,
+    CurFun = fun(A, B) -> A + B end,
+
+    [
+     { "fe:curry/1 correctly curries a function",
+       ?_assertMatch(2, (fe:curry(UncurFun))(1,1))},
+
+     { "fe:uncurry/1 correctly uncurries a function",
+       ?_assertMatch(2, (fe:uncurry(CurFun))({1,1}))},
+
+     { "curry and uncurry are inverse",
+       ?_assertMatch(2, (fe:curry(fe:uncurry(CurFun)))(1,1))},
+
+     { "uncurry and curry are inverse",
+       ?_assertMatch(2, (fe:uncurry(fe:curry(UncurFun)))({1,1}))}
+    ].
+
 %% Collections tests
 
 count_test_() ->
