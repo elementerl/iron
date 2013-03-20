@@ -34,11 +34,8 @@ compose_test_() ->
     Funs = [Addr, Conv, Stry, Drop],
 
     [
-     { "It should act as identity for input with an empty list of funs.",
-       ?_assertMatch(Input, fe:compose(Input, []))},
-
      { "It should correctly compose multple functions.",
-       ?_assertMatch(100, fe:compose(Input, Funs))}
+       ?_assertMatch(100, (fe:compose(Funs))(Input))}
     ].
 
 %% Logics tests
