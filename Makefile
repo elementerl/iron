@@ -25,7 +25,7 @@ validate: dialyze test
 clean:
 	@$(REBAR) clean
 
-repl:
+repl: compile
 	@$(ERL) -pa ebin
 
 .PHONY: all test clean validate dialyze deps
