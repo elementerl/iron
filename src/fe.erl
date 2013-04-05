@@ -9,6 +9,9 @@
 
 -type predicate() :: fun(() -> boolean()).
 
+-type composable_fun() :: fun(() -> any()).
+-type maybe_improper_list(T) :: maybe_improper_list(T, T).
+
 %% =====================================================================
 %% Composition
 %% =====================================================================
@@ -26,7 +29,8 @@ papply(Fun, Fix) ->
             fun(Args) when is_list(Args) -> apply(Fun, [Fix|Args]) end
     end.
 
--spec compose([fun(() -> any())]) -> fun(() -> any()).
+
+-spec compose(maybe_improper_list(composable_fun())) -> composable_fun().
 compose(Funs) when is_list(Funs) ->
     %% NOTE This implements function composition only when the lead functions
     %% has arity one. I'm unsure as of this writing how to define this function
@@ -93,7 +97,7 @@ count(Needle, Haystack) ->
 uniq(List) ->
     lists:usort(List).
 
--spec foldl1(fun((Element::any(), Acc::any()) -> Acc::any()), list()) -> Acc::any().
+-spec foldl1(fun((Element::any(), Acc::any()) -> Acc::any()), nonempty_list()) -> Acc::any().
 foldl1(Fun, [X|Rest]) -> lists:foldl(Fun, X, Rest).
 
 -spec find(Needle::any(), Haystack::[any()]) -> any() | notfound.
