@@ -1,6 +1,6 @@
 -module(fe).
 
--export([papply/2, compose/1]).
+-export([papply/2]).
 -export([all/1, any/1]).
 -export([true/0, false/0, id/1]).
 -export([count/2, uniq/1, foldl1/2, find/2, find/3]).
@@ -8,9 +8,6 @@
 -export([pnand/2, pnot/1, pand/2, por/2]).
 
 -type predicate() :: fun(() -> boolean()).
-
--type composable_fun() :: fun(() -> any()).
--type maybe_improper_list(T) :: maybe_improper_list(T, T).
 
 %% =====================================================================
 %% Composition
@@ -28,14 +25,6 @@ papply(Fun, Fix) ->
         _ ->
             fun(Args) when is_list(Args) -> apply(Fun, [Fix|Args]) end
     end.
-
-
--spec compose(maybe_improper_list(composable_fun())) -> composable_fun().
-compose(Funs) when is_list(Funs) ->
-    %% NOTE This implements function composition only when the lead functions
-    %% has arity one. I'm unsure as of this writing how to define this function
-    %% to cope with arbitrary arity on the lead function.
-    fun(Input) -> lists:foldl(fun(F, Inp) -> apply(F, [Inp]) end, Input, Funs) end.
 
 %% =====================================================================
 %% Logics
