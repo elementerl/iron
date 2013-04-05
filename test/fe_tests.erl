@@ -23,21 +23,6 @@ papply_test_() ->
             ?_assertMatch({error, badarity}, fe:papply(fun() -> ok end, wat)) }
     ].
 
-compose_test_() ->
-    Input = 1,
-
-    Addr = fun(1) -> two end,
-    Conv = fun(A) when is_atom(A) -> atom_to_list(A) end,
-    Stry = fun(S) when is_list(S) -> {S, length(S)} end,
-    Drop = fun({_, _}) -> 100 end,
-
-    Funs = [Addr, Conv, Stry, Drop],
-
-    [
-     { "It should correctly compose multple functions.",
-       ?_assertMatch(100, (fe:compose(Funs))(Input))}
-    ].
-
 %% Logics tests
 
 pnot_test_() ->

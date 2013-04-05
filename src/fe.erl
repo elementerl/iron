@@ -1,6 +1,6 @@
 -module(fe).
 
--export([papply/2, compose/1]).
+-export([papply/2]).
 -export([all/1, any/1]).
 -export([true/0, false/0, id/1]).
 -export([count/2, uniq/1, foldl1/2, find/2, find/3]).
@@ -25,13 +25,6 @@ papply(Fun, Fix) ->
         _ ->
             fun(Args) when is_list(Args) -> apply(Fun, [Fix|Args]) end
     end.
-
--spec compose([fun(() -> any())]) -> fun(() -> any()).
-compose(Funs) when is_list(Funs) ->
-    %% NOTE This implements function composition only when the lead functions
-    %% has arity one. I'm unsure as of this writing how to define this function
-    %% to cope with arbitrary arity on the lead function.
-    fun(Input) -> lists:foldl(fun(F, Inp) -> apply(F, [Inp]) end, Input, Funs) end.
 
 %% =====================================================================
 %% Logics
@@ -93,7 +86,7 @@ count(Needle, Haystack) ->
 uniq(List) ->
     lists:usort(List).
 
--spec foldl1(fun((Element::any(), Acc::any()) -> Acc::any()), list()) -> Acc::any().
+-spec foldl1(fun((Element::any(), Acc::any()) -> Acc::any()), nonempty_list()) -> Acc::any().
 foldl1(Fun, [X|Rest]) -> lists:foldl(Fun, X, Rest).
 
 -spec find(Needle::any(), Haystack::[any()]) -> any() | notfound.
