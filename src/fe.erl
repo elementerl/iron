@@ -3,11 +3,20 @@
 -export([papply/2]).
 -export([all/1, any/1]).
 -export([true/0, false/0, id/1]).
--export([count/2, uniq/1, foldl1/2, find/2, find/3]).
+-export([count/2, uniq/1, foldl1/2, find/2, find/3, tmap/2]).
 -export([fst/1, snd/1, curry/1, uncurry/1]).
 -export([pnand/2, pnot/1, pand/2, por/2]).
 
+-ifdef(TEST).
+-export([tmap_node/2]).
+-endif.
+
 -type predicate() :: fun(() -> boolean()).
+-type node_f():: fun((any(), any()) -> any()).
+
+-type leaf() :: {any(), any()}.
+-type branch() :: {any(), tree()}.
+-type tree() :: [leaf() | branch()].
 
 %% =====================================================================
 %% Composition
@@ -101,6 +110,10 @@ find(Needle, [H|_], _) when Needle =:= H ->
 find(Needle, [_|T], NotFound) ->
     find(Needle, T, NotFound).
 
+-spec tmap(node_f(), tree()) -> tree().
+tmap(F, Nodes) when is_function(F, 2) and is_list(Nodes) ->
+    lists:map(fun(N) -> tmap_node(F, N) end, Nodes).
+
 %% =====================================================================
 %% Utility
 %% =====================================================================
@@ -123,3 +136,11 @@ nand(false, false) -> true;
 nand(false, true)  -> true;
 nand(true,  false) -> true;
 nand(true,  true)  -> false.
+
+-spec tmap_node(node_f(), leaf() | branch()) -> leaf() | branch().
+tmap_node(F, {K, []}) when is_function(F, 2) -> %% a branch
+    {K, []};
+tmap_node(F, {K, [{_,_}|_T]=V}) when is_function(F, 2) -> %% a branch
+    {K, tmap(F, V)};
+tmap_node(F, {K, V}) when is_function(F, 2) ->
+    {K, F(K, V)}.
