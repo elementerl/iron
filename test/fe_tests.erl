@@ -182,6 +182,57 @@ find_test_() ->
             ?_assertMatch(ohai, fe:find(needle, [thread, spool], ohai)) }
     ].
 
+tmap_node_test_() ->
+    Addr = fun(_Name, I) -> I + 1 end,
+    LeafNode = {name, 2},
+    EmptyBranch = {props, []},
+    SomeBranch = {props, [LeafNode, LeafNode]},
+    DeeperBranch = {props, [EmptyBranch, SomeBranch]},
+
+    [
+     { "it will apply to the value of a leaf",
+       ?_assertMatch({name, 3}, fe:tmap_node(Addr, LeafNode))},
+
+     { "it will act as identity over an empty branch",
+       ?_assertMatch(EmptyBranch, fe:tmap_node(Addr, EmptyBranch))},
+
+     { "it will recurse down a branch",
+       ?_assertMatch({props, [{name, 3}, {name, 3}]}, fe:tmap_node(Addr, SomeBranch))},
+
+     { "it will recurse down many branches",
+       ?_assertMatch({props, [EmptyBranch, {props, [{name, 3}, {name,3}]}]},
+                     fe:tmap_node(Addr, DeeperBranch))}
+    ].
+
+tmap_test_() ->
+    Addr = fun
+               (_Name, I) when is_integer(I) ->
+                   I + 1;
+               (_Name, Is) when is_list(Is) ->
+                   lists:foldl(fun(N, Acc) -> N + Acc end, 0, Is)
+           end,
+
+    SimpleTree = [{name, [{sub_name, 3}]}],
+    ComplexTree = [ {leaf_a, 10},
+                    {leaf_b, [ {leaf_c, 1000},
+                               {leaf_d, [1,2,3,4]}
+                             ]},
+                    {leaf_e, []}
+                  ],
+
+    [
+     { "it will map over a simple tree",
+       ?_assertMatch([{name, [{sub_name, 4}]}], fe:tmap(Addr, SimpleTree))},
+
+     { "it will map over a complex tree",
+       ?_assertMatch([{leaf_a, 11},
+                      {leaf_b, [ {leaf_c, 1001},
+                                 {leaf_d, 10}
+                               ]},
+                      {leaf_e, []}],
+                     fe:tmap(Addr, ComplexTree))}
+    ].
+
 %% Utility tests
 true_test() -> true = fe:true().
 false_test() -> false = fe:false().
