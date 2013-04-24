@@ -185,9 +185,9 @@ find_test_() ->
 tmap_node_test_() ->
     Addr = fun(_Name, I) -> I + 1 end,
     LeafNode = {name, 2},
-    EmptyBranch = {props, []},
-    SomeBranch = {props, [LeafNode, LeafNode]},
-    DeeperBranch = {props, [EmptyBranch, SomeBranch]},
+    EmptyBranch = {props, {[]}},
+    SomeBranch = {props, {[LeafNode, LeafNode]}},
+    DeeperBranch = {props, {[EmptyBranch, SomeBranch]}},
 
     [
      { "it will apply to the value of a leaf",
@@ -197,10 +197,11 @@ tmap_node_test_() ->
        ?_assertMatch(EmptyBranch, fe:tmap_node(Addr, EmptyBranch))},
 
      { "it will recurse down a branch",
-       ?_assertMatch({props, [{name, 3}, {name, 3}]}, fe:tmap_node(Addr, SomeBranch))},
+       ?_assertMatch({props, {[{name, 3}, {name, 3}]}},
+                     fe:tmap_node(Addr, SomeBranch))},
 
      { "it will recurse down many branches",
-       ?_assertMatch({props, [EmptyBranch, {props, [{name, 3}, {name,3}]}]},
+       ?_assertMatch({props, {[EmptyBranch, {props, {[{name, 3}, {name,3}]}}]}},
                      fe:tmap_node(Addr, DeeperBranch))}
     ].
 
@@ -212,24 +213,24 @@ tmap_test_() ->
                    lists:foldl(fun(N, Acc) -> N + Acc end, 0, Is)
            end,
 
-    SimpleTree = [{name, [{sub_name, 3}]}],
-    ComplexTree = [ {leaf_a, 10},
-                    {leaf_b, [ {leaf_c, 1000},
+    SimpleTree = {[{name, {[{sub_name, 3}]}}]},
+    ComplexTree = {[ {leaf_a, 10},
+                    {leaf_b, {[ {leaf_c, 1000},
                                {leaf_d, [1,2,3,4]}
-                             ]},
-                    {leaf_e, []}
-                  ],
+                             ]}},
+                    {leaf_e, {[]}}
+                  ]},
 
     [
      { "it will map over a simple tree",
-       ?_assertMatch([{name, [{sub_name, 4}]}], fe:tmap(Addr, SimpleTree))},
+       ?_assertMatch({[{name, {[{sub_name, 4}]}}]}, fe:tmap(Addr, SimpleTree))},
 
      { "it will map over a complex tree",
-       ?_assertMatch([{leaf_a, 11},
-                      {leaf_b, [ {leaf_c, 1001},
-                                 {leaf_d, 10}
-                               ]},
-                      {leaf_e, []}],
+       ?_assertMatch({[{leaf_a, 11},
+                       {leaf_b, {[ {leaf_c, 1001},
+                                   {leaf_d, 10}
+                                 ]}},
+                       {leaf_e, {[]}}]},
                      fe:tmap(Addr, ComplexTree))}
     ].
 

@@ -16,7 +16,7 @@
 
 -type leaf() :: {any(), any()}.
 -type branch() :: {any(), tree()}.
--type tree() :: [leaf() | branch()].
+-type tree() :: {[leaf() | branch()]}.
 
 %% =====================================================================
 %% Composition
@@ -111,8 +111,9 @@ find(Needle, [_|T], NotFound) ->
     find(Needle, T, NotFound).
 
 -spec tmap(node_f(), tree()) -> tree().
-tmap(F, Nodes) when is_function(F, 2) and is_list(Nodes) ->
-    lists:map(fun(N) -> tmap_node(F, N) end, Nodes).
+tmap(_F, {[]}=T) -> T;
+tmap(F, {Nodes}) when is_function(F, 2) and is_list(Nodes) ->
+    {lists:map(fun(N) -> tmap_node(F, N) end, Nodes)}.
 
 %% =====================================================================
 %% Utility
@@ -138,9 +139,7 @@ nand(true,  false) -> true;
 nand(true,  true)  -> false.
 
 -spec tmap_node(node_f(), leaf() | branch()) -> leaf() | branch().
-tmap_node(F, {K, []}) when is_function(F, 2) -> %% a branch
-    {K, []};
-tmap_node(F, {K, [{_,_}|_T]=V}) when is_function(F, 2) -> %% a branch
+tmap_node(F, {K, {L}=V}) when is_function(F, 2) and is_list(L) ->
     {K, tmap(F, V)};
 tmap_node(F, {K, V}) when is_function(F, 2) ->
     {K, F(K, V)}.
