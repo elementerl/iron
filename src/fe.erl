@@ -152,8 +152,7 @@ tmap_node(F, {K, V}) when is_function(F, 2) ->
     {K, F(K, V)}.
 
 -spec tfoldl_node(fold_node_f(), leaf() | branch(), accum()) -> accum().
-tfoldl_node(F, {K, {L}}, Acc) when is_function(F, 3) and is_list(L) ->
-    SubV = lists:foldl(fun(N, Accum) -> tfoldl_node(F, N, Accum) end, [], L),
-    F(K, SubV, Acc);
+tfoldl_node(F, {K, {L}=T}, Acc) when is_function(F, 3) and is_list(L) ->
+    F(K, tfoldl(F, T, []), Acc);
 tfoldl_node(F, {K, V}, Acc) when is_function(F, 3) ->
     F(K, V, Acc).
