@@ -3,7 +3,7 @@
 -export([papply/2]).
 -export([all/1, any/1]).
 -export([true/0, false/0, id/1]).
--export([count/2, uniq/1, foldl1/2, find/2, find/3, tmap/2]).
+-export([count/2, uniq/1, foldl1/2, find/2, find/3, tmap/2, tfoldl/3]).
 -export([fst/1, snd/1, curry/1, uncurry/1]).
 -export([pnand/2, pnot/1, pand/2, por/2]).
 
@@ -13,6 +13,8 @@
 
 -type predicate() :: fun(() -> boolean()).
 -type node_f():: fun((any(), any()) -> any()).
+-type accum() :: any().
+-type fold_node_f() :: fun((any(), any(), accum()) -> accum()).
 
 -type leaf() :: {any(), any()}.
 -type branch() :: {any(), tree()}.
@@ -115,6 +117,11 @@ tmap(_F, {[]}=T) -> T;
 tmap(F, {Nodes}) when is_function(F, 2) and is_list(Nodes) ->
     {lists:map(fun(N) -> tmap_node(F, N) end, Nodes)}.
 
+-spec tfoldl(fold_node_f(), tree(), accum()) -> accum().
+tfoldl(_F, {[]}, Acc) -> Acc;
+tfoldl(F, {Nodes}, Acc) when is_function(F, 3) and is_list(Nodes) ->
+    lists:foldl(fun(N, Accum) -> tfoldl_node(F,N,Accum) end, Acc, Nodes).
+
 %% =====================================================================
 %% Utility
 %% =====================================================================
@@ -143,3 +150,10 @@ tmap_node(F, {K, {L}=V}) when is_function(F, 2) and is_list(L) ->
     {K, tmap(F, V)};
 tmap_node(F, {K, V}) when is_function(F, 2) ->
     {K, F(K, V)}.
+
+-spec tfoldl_node(fold_node_f(), leaf() | branch(), accum()) -> accum().
+tfoldl_node(F, {K, {L}}, Acc) when is_function(F, 3) and is_list(L) ->
+    SubV = lists:foldl(fun(N, Accum) -> tfoldl_node(F, N, Accum) end, [], L),
+    F(K, SubV, Acc);
+tfoldl_node(F, {K, V}, Acc) when is_function(F, 3) ->
+    F(K, V, Acc).

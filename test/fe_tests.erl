@@ -234,6 +234,47 @@ tmap_test_() ->
                      fe:tmap(Addr, ComplexTree))}
     ].
 
+tfoldl_test_() ->
+    ListMaker = fun
+                    (_K, V, Acc) when is_list(V) -> V ++ Acc;
+                    (_K, V, Acc) -> [V|Acc]
+                end,
+    Swapper = fun
+                  (K, [V], Acc) -> [{V, K}|Acc];
+                  (K, V, Acc) -> [{V, K}|Acc]
+              end,
+
+    SimpleTree = {[{one, 1}, {dos, 2}, {drei, 3}]},
+    ComplexTree = {[
+                    {german, {[
+                               {eins, 1}
+                              ]}},
+                    {english, {[
+                                {two, 2}
+                               ]}},
+                    {spanish, {[
+                                {tres, 3},
+                                {quatro, 4}
+                               ]}}
+                   ]},
+
+    [
+     { "it will fold over a simple tree",
+       [
+        ?_assertMatch([3,2,1], fe:tfoldl(ListMaker, SimpleTree, [])),
+        ?_assertMatch([{3, drei}, {2, dos}, {1, one}], fe:tfoldl(Swapper, SimpleTree, []))
+       ]
+     },
+     { "it will fold over a complex tree",
+       [
+        ?_assertMatch([4,3,2,1], fe:tfoldl(ListMaker, ComplexTree, [])),
+        ?_assertMatch([{[{4, quatro}, {3, tres}], spanish}, {{2, two}, english}, {{1, eins}, german}],
+                      fe:tfoldl(Swapper, ComplexTree, []))
+       ]
+     }
+    ].
+
+
 %% Utility tests
 true_test() -> true = fe:true().
 false_test() -> false = fe:false().
